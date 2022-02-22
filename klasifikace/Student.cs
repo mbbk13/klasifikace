@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace klasifikace
 {
-    class Student
+    public class Student
     {
+        public int id { get; set; }
+        public string firstname { get; set; }
+        public string lastname { get; set; }
+        public DateTime birthday { get; set; }
+        public List<Grade> grades { get; set; }
     }
 }

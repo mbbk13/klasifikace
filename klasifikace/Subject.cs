@@ -6,7 +6,11 @@ using System.Threading.Tasks;
 
 namespace klasifikace
 {
-    class Subject
+    public class Subject
     {
+        public int id { get; set; }
+        public string name { get; set; }
+        public string shortName { get; set; }
+        public Teacher teacher { get; set; }
     }
 }
