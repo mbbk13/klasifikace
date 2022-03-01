@@ -12,11 +12,27 @@ namespace klasifikace
 {
     public partial class Form1 : Form
     {
+        List<Student> students;
+        SQLRepository sQLRepository = new SQLRepository();
+
         public Form1()
         {
             InitializeComponent();
+            students = sQLRepository.TempStudents();
+            RefreshGUI();
         }
 
-
+        private void RefreshGUI()
+        {
+            lvData.Items.Clear();
+            foreach (Student student in students)
+            {
+                ListViewItem listViewItem = new ListViewItem(new string[] { 
+                    student.lastname + " " + student.firstname,
+                    student.birthday.ToString("dd.MM.yyyy")
+                });
+                lvData.Items.Add(listViewItem);
+            }
+        }
     }
 }
