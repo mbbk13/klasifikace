@@ -17,7 +17,14 @@ namespace klasifikace
                                             TrustServerCertificate=False;
                                             ApplicationIntent=ReadWrite;
                                             MultiSubnetFailover=False";
-        
+
+        private Dictionary<int,Teacher> teachers;
+
+        public SQLRepository()
+        {
+            teachers = GetTeachersFromD();
+        }
+
 
         public List<Student> TempStudents()
         {
@@ -87,10 +94,64 @@ namespace klasifikace
             {
                 using(SqlCommand sqlCommand = new SqlCommand("", sqlConnection))
                 {
-                    sqlCommand.CommandText = "SELECT ";
+                    sqlCommand.CommandText = "";
                 }
             }
             return grades;
+        }
+
+        private Dictionary<int,Teacher> GetTeachersFromD()
+        {
+            Dictionary<int, Teacher> teachers = new Dictionary<int, Teacher>();
+            try
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(connectionString))
+                {
+                    sqlConnection.Open();
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = sqlConnection;
+                        sqlCommand.CommandText = "select * from Teacher";
+                        using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                        {
+                            while (sqlDataReader.Read())
+                            {
+                                var id = Convert.ToInt32(sqlDataReader["id"]);
+                                teachers.Add(id, new Teacher()
+                                {
+                                    id = id,
+                                    name = sqlDataReader["name"].ToString(),
+                                    shortName = sqlDataReader["shortName"].ToString(),
+                                });
+                            }
+                        }
+                    }
+                    sqlConnection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Some error happend (Exception: {ex.Message}");
+            }
+            //return TempStudents();
+            return teachers;
+        }   
+        
+        public List<Teacher> GetTeachers()
+        {
+            return teachers.SelectMany(t => t.Value);
+        }
+
+        public Teacher GetTeacher(int id)
+        {
+            foreach(var teacher in teachers)
+            {
+                if (teacher.id == id)
+                {
+                    return teacher;
+                }
+            }
+            return null;
         }
     }
 }
