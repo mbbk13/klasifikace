@@ -8,17 +8,19 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace klasifikace
 {
     public partial class Form1 : Form
     {
+       
         List<Student> students;
         SQLRepository sQLRepository = new SQLRepository();
 
         public Form1()
         {
             InitializeComponent();
-            students = sQLRepository.TempStudents();
+            students = sQLRepository.GetStudents();
             RefreshGUI();
         }
 

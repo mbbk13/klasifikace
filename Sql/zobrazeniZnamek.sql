@@ -1,0 +1,1 @@
+﻿select * from Grade g join SSubject s on g.idSubject=s.idSubject join Teacher t on s.idTeacher=t.idTeacher

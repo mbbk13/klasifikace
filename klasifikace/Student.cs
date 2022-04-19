@@ -13,5 +13,10 @@ namespace klasifikace
         public string lastname { get; set; }
         public DateTime birthday { get; set; }
         public List<Grade> grades { get; set; }
+
+        public Student()
+        {
+            grades = new List<Grade>();
+        }
     }
 }
