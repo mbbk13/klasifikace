@@ -68,13 +68,15 @@ namespace klasifikace
                         {
                             while (sqlDataReader.Read())
                             {
-                                students.Add(new Student()
+                                var student = new Student()
                                 {
                                     id = Convert.ToInt32(sqlDataReader["id"]),
                                     firstname = sqlDataReader["firstName"].ToString(),
                                     lastname = sqlDataReader["lastname"].ToString(),
                                     birthday = Convert.ToDateTime(sqlDataReader["birthday"]),
-                                });
+                                };
+                                student.grades = GetGrades(student);
+                                students.Add(student);
                             }
                         }
                     }
@@ -94,10 +96,29 @@ namespace klasifikace
             List<Grade> grades = new List<Grade>();
             using (SqlConnection sqlConnection = new SqlConnection(connectionString))
             {
-                using(SqlCommand sqlCommand = new SqlCommand("", sqlConnection))
+                sqlConnection.Open();
+                using (SqlCommand sqlCommand = new SqlCommand())
                 {
-                    sqlCommand.CommandText = "";
+                    sqlCommand.Connection = sqlConnection;
+                    sqlCommand.CommandText = "select * from Teacher";
+                    using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                    {
+                        while (sqlDataReader.Read())
+                        {
+                            var id = Convert.ToInt32(sqlDataReader["id"]);
+                            grades.Add(new Grade()
+                            {
+                                id = id,
+                                gradeNumber = Convert.ToInt32(sqlDataReader["gradeNumber"]),
+                                weight = Convert.ToInt32(sqlDataReader["veight"].ToString()),
+                                comment = sqlDataReader["comment"].ToString(),
+                                subject = GetSubject(Convert.ToInt32(sqlDataReader["idSubject"])),
+
+                            }); ; ;
+                        }
+                    }
                 }
+                sqlConnection.Close();
             }
             return grades;
         }
@@ -118,7 +139,7 @@ namespace klasifikace
                         {
                             while (sqlDataReader.Read())
                             {
-                                var id = Convert.ToInt32(sqlDataReader["id"]);
+                                var id = Convert.ToInt32(sqlDataReader["idTeacher"]);
                                 teachers.Add(id, new Teacher()
                                 {
                                     id = id,

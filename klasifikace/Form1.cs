@@ -31,7 +31,11 @@ namespace klasifikace
             {
                 ListViewItem listViewItem = new ListViewItem(new string[] { 
                     student.lastname + " " + student.firstname,
-                    student.birthday.ToString("dd.MM.yyyy")
+                    student.birthday.ToString("dd.MM.yyyy"),
+                    string.Join(", ",student.grades.FindAll(Grade=>Grade.subject.shortName.ToLower()=="aj")),
+                    //string.Join(", ",student.grades.FindAll(Grade=>Grade.subject.shortName.ToLower()=="")),
+                    //string.Join(", ",student.grades.FindAll(Grade=>Grade.subject.shortName.ToLower()=="")),
+                    //string.Join(", ",student.grades.FindAll(Grade=>Grade.subject.shortName.ToLower()=="")),
                 });
                 lvData.Items.Add(listViewItem);
             }
