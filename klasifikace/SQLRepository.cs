@@ -19,10 +19,12 @@ namespace klasifikace
                                             MultiSubnetFailover=False";
 
         private Dictionary<int,Teacher> teachers;
+        private Dictionary<int, Subject> subjects;
 
         public SQLRepository()
         {
             teachers = GetTeachersFromD();
+            subjects = GetSubjectsFromD();
         }
 
 
@@ -139,17 +141,66 @@ namespace klasifikace
         
         public List<Teacher> GetTeachers()
         {
-            return teachers.SelectMany(t => t.Value);
+            return teachers.Values.AsEnumerable().ToList();
         }
 
         public Teacher GetTeacher(int id)
         {
-            foreach(var teacher in teachers)
+            if (teachers.ContainsKey(id))
             {
-                if (teacher.id == id)
+                return teachers[id];
+            }
+            return null;
+        }
+
+        private Dictionary<int, Subject> GetSubjectsFromD()
+        {
+            Dictionary<int, Subject> subjects = new Dictionary<int, Subject>();
+            try
+            {
+                using (SqlConnection sqlConnection = new SqlConnection(connectionString))
                 {
-                    return teacher;
+                    sqlConnection.Open();
+                    using (SqlCommand sqlCommand = new SqlCommand())
+                    {
+                        sqlCommand.Connection = sqlConnection;
+                        sqlCommand.CommandText = "select * from Subject";
+                        using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+                        {
+                            while (sqlDataReader.Read())
+                            {
+                                var id = Convert.ToInt32(sqlDataReader["idSubject"]);
+                                subjects.Add(id, new Subject()
+                                {
+                                    id = id,
+                                    name = sqlDataReader["name"].ToString(),
+                                    shortName = sqlDataReader["shortName"].ToString(),
+                                    teacher = GetTeacher(Convert.ToInt32(sqlDataReader["idTeacher"]))
+                                }) ;
+                            }
+                        }
+                    }
+                    sqlConnection.Close();
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Some error happend (Exception: {ex.Message}");
+            }
+            //return TempStudents();
+            return subjects;
+        }
+
+        public List<Subject> GetSubjects()
+        {
+            return subjects.Values.AsEnumerable().ToList();
+        }
+
+        public Subject GetSubject(int id)
+        {
+            if (subjects.ContainsKey(id))
+            {
+                return subjects[id];
             }
             return null;
         }
